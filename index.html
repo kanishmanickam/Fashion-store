@@ -308,37 +308,34 @@
         /* ── Load admin-added products from API ── */
         (async () => {
             try {
-                const res = await fetch('/api/products');
+                const res = await fetch('http://localhost:3000/api/products');
                 const products = await res.json();
                 if (!products.length) return;
-
-                const container = document.querySelector('.itemstuff');
+                const container = document.querySelector('.pro-container');
                 if (!container) return;
-
                 products.forEach(p => {
                     const div = document.createElement('div');
-                    div.className = 'box1';
-                    div.setAttribute('data-title', p.name);
-                    div.setAttribute('data-price', '$' + parseFloat(p.price).toFixed(2));
-                    div.setAttribute('data-img', p.imageUrl || '');
+                    div.className = 'pro';
+                    const imgUrl = p.imageUrl ? (p.imageUrl.startsWith('/img/') ? 'http://localhost:3000' + p.imageUrl : p.imageUrl) : '';
                     div.innerHTML = `
-                    ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" style="height:346px;width:260px;object-fit:cover;">` : `<div style="height:346px;width:260px;background:#E8EAF6;display:flex;align-items:center;justify-content:center;font-size:48px;color:#7986CB"><i class='bx bx-image'></i></div>`}
-                    <div class="tester">
-                        <h4>${p.name}</h4><br>
-                        <h5>$${parseFloat(p.price).toFixed(2)}</h5><br>
-                        <div class="cart"><a href="#"><i class='bx bx-cart-add'></i></a></div>
-                    </div>`;
+                        ${imgUrl ? `<img src="${imgUrl}" alt="${p.name}" style="height:260px;object-fit:cover;">` : `<div style="height:260px;background:#F3F4F6;display:flex;align-items:center;justify-content:center;font-size:40px;color:#9CA3AF"><i class='bx bx-image'></i></div>`}
+                        <div class="des">
+                            <span>${p.category || 'General'}</span>
+                            <h5>${p.name}</h5>
+                            <div class="star"><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i></div>
+                            <h4>₹${parseFloat(p.price).toFixed(2)}</h4>
+                        </div>
+                        <a href="#" class="cart-btn"><i class="bx bx-cart cart"></i></a>`;
                     container.appendChild(div);
-                    // bind cart click
-                    div.querySelector('.bx-cart-add').addEventListener('click', (e) => {
+                    div.querySelector('.cart-btn').addEventListener('click', e => {
                         e.preventDefault();
                         let cart = JSON.parse(localStorage.getItem('cart')) || [];
-                        cart.push({ title: p.name, price: '$' + parseFloat(p.price).toFixed(2), img: p.imageUrl || '' });
+                        cart.push({ title: p.name, price: '₹' + parseFloat(p.price).toFixed(2), img: imgUrl });
                         localStorage.setItem('cart', JSON.stringify(cart));
                         alert('Item added to cart');
                     });
                 });
-            } catch (err) { /* server not running – silently skip */ }
+            } catch (err) { }
         })();
     </script>
 

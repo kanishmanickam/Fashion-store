@@ -1009,7 +1009,7 @@
                             </div>
                             <div class="form-group"><label>Product Name *</label><input type="text" id="prodName"
                                     placeholder="e.g. Classic Polo Shirt" required></div>
-                            <div class="form-group"><label>Price (USD) *</label><input type="number" id="prodPrice"
+                            <div class="form-group"><label>Price (₹ INR) *</label><input type="number" id="prodPrice"
                                     placeholder="49.99" step="0.01" min="0" required></div>
                             <div class="form-group">
                                 <label>Category *</label>
@@ -1107,7 +1107,7 @@
     <div class="toast" id="toast"><i class='bx bx-check-circle'></i><span id="toastMsg"></span></div>
 
     <script>
-        const API = '';  // same origin – express serves static files
+        const API = 'http://localhost:3000';  // always point to Node.js server
 
         /* ── Auth guard ── */
         if (!sessionStorage.getItem('luxe_admin')) window.location.href = 'login.html';
@@ -1153,7 +1153,7 @@
            PRODUCTS – API CALLS
         ═══════════════════════════════════════ */
         async function fetchProducts() {
-            const res = await fetch('/api/products');
+            const res = await fetch(`${API}/api/products`);
             allProducts = await res.json();
             return allProducts;
         }
@@ -1178,7 +1178,7 @@
             const catCls = { mens: 'cat-mens', womens: 'cat-womens', kids: 'cat-kids', general: 'cat-general' };
             grid.innerHTML = list.map(p => {
                 const imgEl = p.imageUrl
-                    ? `<img class="prod-img" src="${p.imageUrl}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                    ? `<img class="prod-img" src="${p.imageUrl.startsWith('/img/') ? API + p.imageUrl : p.imageUrl}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                <div class="prod-img-placeholder" style="display:none"><i class='bx bx-image'></i></div>`
                     : `<div class="prod-img-placeholder"><i class='bx bx-image'></i></div>`;
                 return `<div class="product-card">
@@ -1186,7 +1186,7 @@
             <div class="prod-body">
                 <span class="prod-cat-badge ${catCls[p.category] || 'cat-general'}">${p.category}</span>
                 <p class="prod-name">${p.name}</p>
-                <p class="prod-price">$${parseFloat(p.price).toFixed(2)}</p>
+                <p class="prod-price">₹${parseFloat(p.price).toFixed(2)}</p>
                 <p class="prod-desc">${p.description || 'No description.'}</p>
                 <div class="prod-actions">
                     <button class="btn btn-ghost btn-sm" onclick="editProduct('${p._id}')"><i class='bx bx-edit'></i> Edit</button>
@@ -1257,7 +1257,7 @@
             else if (urlVal) fd.append('imageUrl', urlVal);
 
             try {
-                const res = await fetch(id ? `/api/products/${id}` : '/api/products', {
+                const res = await fetch(id ? `${API}/api/products/${id}` : `${API}/api/products`, {
                     method: id ? 'PUT' : 'POST',
                     body: fd
                 });
@@ -1289,7 +1289,8 @@
             document.getElementById('prodDiscount').value = p.discount || '';
             if (p.imageUrl) {
                 const img = document.getElementById('imgPreview');
-                img.src = p.imageUrl; img.style.display = 'block';
+                img.src = p.imageUrl.startsWith('/img/') ? API + p.imageUrl : p.imageUrl;
+                img.style.display = 'block';
                 document.getElementById('imgPlaceholder').style.display = 'none';
                 if (!p.imageUrl.startsWith('/img/')) document.getElementById('imgUrl').value = p.imageUrl;
             }
@@ -1315,7 +1316,7 @@
         document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
             if (!pendingDeleteId) return;
             try {
-                const res = await fetch(`/api/products/${pendingDeleteId}`, { method: 'DELETE' });
+                const res = await fetch(`${API}/api/products/${pendingDeleteId}`, { method: 'DELETE' });
                 if (!res.ok) throw new Error('Delete failed');
                 allProducts = allProducts.filter(p => p._id !== pendingDeleteId);
                 renderProducts();
@@ -1334,7 +1335,7 @@
             const tbody = document.getElementById('orders-body');
             if (tbody) tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:30px;"><div class="spinner"></div></td></tr>';
             try {
-                const res = await fetch('/api/orders');
+                const res = await fetch(`${API}/api/orders`);
                 allOrders = await res.json();
                 renderOrdersTable();
             } catch (err) {
@@ -1374,7 +1375,7 @@
 
         async function updateOrderStatus(id, status) {
             try {
-                await fetch(`/api/orders/${id}/status`, {
+                await fetch(`${API}/api/orders/${id}/status`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status })
@@ -1409,7 +1410,7 @@
                     <td style="padding:8px;">${it.price}</td>
                 </tr>`).join('')}
                 <tr><td colspan="2" style="padding:10px 8px;font-weight:700;text-align:right;">Total</td>
-                <td style="padding:10px 8px;font-weight:700;color:var(--primary);">$${parseFloat(o.total).toFixed(2)}</td></tr>
+                <td style="padding:10px 8px;font-weight:700;color:var(--primary);">₹${parseFloat(o.total).toFixed(2)}</td></tr>
             </tbody>
         </table>
     `;
@@ -1421,7 +1422,7 @@
         ═══════════════════════════════════════ */
         async function loadDashboard() {
             try {
-                const [pRes, oRes] = await Promise.all([fetch('/api/products'), fetch('/api/orders')]);
+                const [pRes, oRes] = await Promise.all([fetch(`${API}/api/products`), fetch(`${API}/api/orders`)]);
                 const products = await pRes.json();
                 const orders = await oRes.json();
                 allProducts = products;
@@ -1430,7 +1431,7 @@
                 document.getElementById('stat-products').textContent = products.length;
                 document.getElementById('stat-orders').textContent = orders.length;
                 const revenue = orders.reduce((s, o) => s + parseFloat(o.total || 0), 0);
-                document.getElementById('stat-revenue').textContent = '$' + revenue.toFixed(2);
+                document.getElementById('stat-revenue').textContent = '₹' + revenue.toFixed(2);
                 const pending = orders.filter(o => o.status === 'Pending').length;
                 document.getElementById('stat-pending').textContent = pending;
 
@@ -1445,7 +1446,7 @@
                 <td style="font-size:11px;color:var(--muted);">${o._id.slice(-8).toUpperCase()}</td>
                 <td>${o.customerName}</td>
                 <td>${o.phone}</td>
-                <td>$${parseFloat(o.total).toFixed(2)}</td>
+                <td>₹${parseFloat(o.total).toFixed(2)}</td>
                 <td><span class="order-status status-${o.status || 'Pending'}">${o.status || 'Pending'}</span></td>
                 <td style="font-size:12px;">${date}</td>
             </tr>`;

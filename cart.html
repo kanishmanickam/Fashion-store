@@ -475,7 +475,7 @@
 
         function renderCart() {
             const list = document.getElementById('cartItemsList');
-            const summaryLines = document.getElementById('orderSummaryLines');
+            const summaryLines = document.getElementById('summaryLines');
 
             if (!cart.length) {
                 document.getElementById('cartSection').style.display = 'none';
@@ -484,26 +484,24 @@
             }
 
             let total = 0;
-            list.innerHTML = cart.map((item, i) => {
-                const price = parseFloat(item.price.replace('$', ''));
-                total += price;
-                return `<div class="cart-summary-item">
-                    ${item.img
-                        ? `<img src="${item.img}" alt="${item.title}">`
-                        : `<div class="csi-img-placeholder"><i class='bx bx-image'></i></div>`}
-                    <div class="csi-info">
-                        <p>${item.title}</p>
-                        <small>Qty: 1</small>
+            list.innerHTML = cart.map((item, idx) => {
+                const priceNum = parseFloat((item.price || '0').replace(/[^0-9.]/g, '')) || 0;
+                total += priceNum;
+                return `
+                <div class="cart-item-row">
+                    <img src="${item.img || ''}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/80'">
+                    <div class="ci-info">
+                        <h4>${item.title}</h4>
+                        <p class="ci-price">₹${priceNum.toFixed(2)}</p>
                     </div>
-                    <span class="csi-price">${item.price}</span>
-                    <button onclick="removeItem(${i})" style="background:none;border:none;color:#E53935;cursor:pointer;font-size:18px;padding:4px;"><i class='bx bx-x'></i></button>
+                    <button class="remove-btn" onclick="removeItem(${idx})"><i class="bx bx-trash"></i> Remove</button>
                 </div>`;
             }).join('');
 
             summaryLines.innerHTML = `
-                <div class="summary-line"><span>${cart.length} item(s)</span><span>$${total.toFixed(2)}</span></div>
+                <div class="summary-line"><span>${cart.length} item(s)</span><span>₹${total.toFixed(2)}</span></div>
                 <div class="summary-line"><span>Delivery</span><span style="color:#2E7D32;font-weight:600;">FREE</span></div>
-                <div class="summary-line total"><span>Total Payable</span><span>$${total.toFixed(2)}</span></div>
+                <div class="summary-line total"><span>Total Payable</span><span>₹${total.toFixed(2)}</span></div>
             `;
         }
 
@@ -533,7 +531,7 @@
             btn.disabled = true;
             btn.innerHTML = '<div class="btn-spinner"></div> Placing Order…';
 
-            const total = cart.reduce((s, item) => s + parseFloat(item.price.replace('$', '')), 0);
+            const total = cart.reduce((s, item) => s + (parseFloat((item.price || '0').replace(/[^0-9.]/g, '')) || 0), 0);
 
             const payload = {
                 customerName: document.getElementById('co-name').value.trim(),
@@ -553,7 +551,7 @@
             };
 
             try {
-                const res = await fetch('/api/orders', {
+                const res = await fetch('http://localhost:3000/api/orders', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
