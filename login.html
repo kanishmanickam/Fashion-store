@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuxeFashion – Login</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="css/styler.css">
+    <style>
+        /* ── Tab selector ── */
+        .role-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            margin: 22px 0 0;
+        }
+
+        .role-tab {
+            flex: 1;
+            padding: 10px 0;
+            border: none;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: .5px;
+            transition: .25s;
+            color: #fff;
+            background: rgba(255, 255, 255, .15);
+        }
+
+        .role-tab:first-child {
+            border-radius: 10px 0 0 10px;
+        }
+
+        .role-tab:last-child {
+            border-radius: 0 10px 10px 0;
+        }
+
+        .role-tab.active {
+            background: #21264D;
+        }
+
+        .role-tab:not(.active):hover {
+            background: rgba(33, 38, 77, .45);
+        }
+
+        /* ── Admin badge on col-1 ── */
+        .admin-badge {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-badge i {
+            font-size: 64px;
+            color: #21264D;
+        }
+
+        .admin-badge p {
+            color: #21264D;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        /* show/hide col-1 content based on role */
+        body.admin-mode .image-layer,
+        body.admin-mode .featured-words {
+            display: none;
+        }
+
+        body.admin-mode .admin-badge {
+            display: flex;
+        }
+
+        /* admin warning strip */
+        .admin-note {
+            display: none;
+            background: rgba(255, 200, 0, .18);
+            border: 1px solid rgba(255, 200, 0, .5);
+            border-radius: 8px;
+            color: #ffe082;
+            font-size: 12px;
+            text-align: center;
+            padding: 8px 12px;
+            margin-bottom: 4px;
+        }
+
+        body.admin-mode .admin-note {
+            display: block;
+        }
+
+        /* hide form sections not in use */
+        #customerSection,
+        #adminSection {
+            display: none;
+        }
+
+        #customerSection.visible,
+        #adminSection.visible {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <!-- Left visual panel -->
+        <div class="col col-1">
+            <div class="image-layer">
+                <img src="img/logo.png" class="form-image logo">
+            </div>
+            <p class="featured-words">You are few minutes away from <br> <span>Where Fashion meets Passion</span></p>
+            <!-- Admin visual -->
+            <div class="admin-badge">
+                <i class='bx bxs-shield-alt-2'></i>
+                <p>Admin Access</p>
+            </div>
+        </div>
+
+        <!-- Right form panel -->
+        <div class="col col-2">
+
+            <!-- Role selector -->
+            <div class="role-tabs">
+                <button class="role-tab active" id="tabCustomer" onclick="switchRole('customer')">
+                    <i class='bx bx-user'></i> Customer
+                </button>
+                <button class="role-tab" id="tabAdmin" onclick="switchRole('admin')">
+                    <i class='bx bxs-shield'></i> Admin
+                </button>
+            </div>
+
+            <!-- ── CUSTOMER SECTION ── -->
+            <div id="customerSection" class="visible">
+                <div class="form-title" style="margin-top:40px; text-align:center;">
+                    <span>Welcome!</span>
+                </div>
+                <div style="text-align:center; padding: 0 4vw;">
+                    <p style="color:rgba(255,255,255,.75); font-size:14px; margin-bottom:28px; line-height:1.7;">
+                        No login required.<br>Browse and shop freely as a guest.
+                    </p>
+                    <button class="input-submit" onclick="window.location.href='index.html'"
+                        style="width:100%; justify-content:center;">
+                        <span>Enter Store</span>
+                        <i class="bx bx-right-arrow-alt"></i>
+                    </button>
+                    <div style="margin-top:28px;">
+                        <div class="social-login" style="justify-content:center;">
+                            <i class="bx bxl-google"></i>
+                            <i class="bx bxl-instagram"></i>
+                            <i class="bx bxl-facebook"></i>
+                            <i class="bx bxl-twitter"></i>
+                            <i class="bx bxl-apple"></i>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /customerSection -->
+
+            <!-- ── ADMIN SECTION ── -->
+            <div id="adminSection">
+                <div class="form-title" style="margin-top:30px; text-align:center;"><span>Admin Login</span></div>
+                <p class="admin-note">⚠️ Restricted area — authorised personnel only</p>
+                <form id="adminLoginForm" style="padding: 0 4vw;">
+                    <div class="form-inputs">
+                        <div class="input-box">
+                            <input type="text" id="admin-user" class="input-field" placeholder="Admin Username"
+                                required>
+                            <i class="bx bxs-user-badge icon"></i>
+                        </div>
+                        <div class="input-box">
+                            <input type="password" id="admin-pass" class="input-field" placeholder="Admin Password"
+                                required>
+                            <i class="bx bx-lock icon"></i>
+                        </div>
+                        <p id="adminError" style="color:#ff6b6b;font-size:13px;text-align:center;min-height:20px;"></p>
+                        <div class="input-box">
+                            <button class="input-submit" type="submit" style="background:#21264D;">
+                                <span>Access Dashboard</span>
+                                <i class="bx bx-shield-quarter"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <p style="text-align:center;color:rgba(255,255,255,.6);font-size:12px;margin-top:16px;">
+                    Default credentials: admin / <em>admin123</em>
+                </p>
+            </div><!-- /adminSection -->
+
+        </div><!-- /col-2 -->
+    </div>
+
+    <script src="js/scripter.js"></script>
+    <script>
+        /* ── Role switcher ── */
+        function switchRole(role) {
+            const isAdmin = role === 'admin';
+            document.getElementById('tabCustomer').classList.toggle('active', !isAdmin);
+            document.getElementById('tabAdmin').classList.toggle('active', isAdmin);
+            document.getElementById('customerSection').classList.toggle('visible', !isAdmin);
+            document.getElementById('adminSection').classList.toggle('visible', isAdmin);
+            document.body.classList.toggle('admin-mode', isAdmin);
+        }
+
+        /* ── Admin login handler ── */
+        document.getElementById('adminLoginForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const u = document.getElementById('admin-user').value.trim();
+            const p = document.getElementById('admin-pass').value.trim();
+            const err = document.getElementById('adminError');
+
+            // Credentials stored (for a static site; replace with server auth in production)
+            const ADMIN_USER = 'pavishvel';
+            const ADMIN_PASS = 'Pavish@123';
+
+            if (u === ADMIN_USER && p === ADMIN_PASS) {
+                sessionStorage.setItem('luxe_admin', 'true');
+                window.location.href = 'admin.html';
+            } else {
+                err.textContent = '✗ Invalid credentials. Please try again.';
+                document.getElementById('admin-pass').value = '';
+            }
+        });
+    </script>
+</body>
+
+</html>

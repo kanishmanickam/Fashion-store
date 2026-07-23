@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart – LuxeFashion</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ── Checkout layout ── */
+        .checkout-wrap {
+            max-width: 720px;
+            margin: 40px auto 80px;
+            padding: 0 20px;
+        }
+
+        .checkout-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, .08);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .checkout-card h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkout-card h2 i {
+            color: #21264D;
+            font-size: 24px;
+        }
+
+        /* form grid */
+        .co-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .co-grid .full {
+            grid-column: 1 / -1;
+        }
+
+        .co-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .co-group label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #6B7280;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .co-group input,
+        .co-group textarea {
+            padding: 11px 14px;
+            border: 1.5px solid #E5E7EB;
+            border-radius: 9px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            outline: none;
+            transition: border .2s;
+        }
+
+        .co-group input:focus,
+        .co-group textarea:focus {
+            border-color: #21264D;
+        }
+
+        .co-group textarea {
+            resize: none;
+            min-height: 70px;
+        }
+
+        /* COD badge */
+        .cod-badge {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: #E8F5E9;
+            border: 1.5px solid #A5D6A7;
+            border-radius: 12px;
+            padding: 16px 20px;
+        }
+
+        .cod-badge i {
+            font-size: 32px;
+            color: #2E7D32;
+        }
+
+        .cod-badge strong {
+            font-size: 15px;
+            color: #1B5E20;
+        }
+
+        .cod-badge p {
+            font-size: 12px;
+            color: #388E3C;
+            margin-top: 2px;
+        }
+
+        /* order summary */
+        .summary-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #F3F4F6;
+            font-size: 14px;
+        }
+
+        .summary-line:last-child {
+            border-bottom: none;
+        }
+
+        .summary-line.total {
+            font-size: 18px;
+            font-weight: 700;
+            color: #21264D;
+            border-top: 2px solid #E5E7EB;
+            padding-top: 14px;
+            margin-top: 4px;
+        }
+
+        /* cart items in summary */
+        .cart-summary-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 0;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .cart-summary-item img {
+            width: 56px;
+            height: 56px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .cart-summary-item .csi-img-placeholder {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            background: #E8EAF6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #7986CB;
+        }
+
+        .cart-summary-item .csi-info {
+            flex: 1;
+        }
+
+        .cart-summary-item .csi-info p {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .cart-summary-item .csi-info small {
+            font-size: 12px;
+            color: #6B7280;
+        }
+
+        .csi-price {
+            font-size: 14px;
+            font-weight: 700;
+            color: #21264D;
+        }
+
+        .place-order-btn {
+            width: 100%;
+            padding: 16px;
+            background: #21264D;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: .2s;
+            margin-top: 16px;
+        }
+
+        .place-order-btn:hover {
+            background: #2e3560;
+            transform: translateY(-2px);
+        }
+
+        .place-order-btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* success screen */
+        .success-screen {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .success-screen i {
+            font-size: 80px;
+            color: #4CAF50;
+        }
+
+        .success-screen h2 {
+            font-size: 26px;
+            font-weight: 700;
+            margin: 16px 0 8px;
+        }
+
+        .success-screen p {
+            color: #6B7280;
+            font-size: 15px;
+            margin-bottom: 28px;
+        }
+
+        .success-screen a {
+            display: inline-block;
+            padding: 12px 32px;
+            background: #21264D;
+            color: #fff;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            text-decoration: none;
+            transition: .2s;
+        }
+
+        .success-screen a:hover {
+            background: #2e3560;
+        }
+
+        /* spinner */
+        .btn-spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255, 255, 255, .4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* empty cart */
+        .empty-cart {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-cart i {
+            font-size: 72px;
+            color: #D1D5DB;
+        }
+
+        .empty-cart h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 14px 0 8px;
+        }
+
+        .empty-cart p {
+            color: #6B7280;
+            margin-bottom: 24px;
+        }
+
+        .empty-cart a {
+            display: inline-block;
+            padding: 12px 28px;
+            background: #21264D;
+            color: #fff;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        #clear-cart-btn {
+            background: #fff;
+            border: 1.5px solid #E5E7EB;
+            color: #E53935;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: .2s;
+            margin-bottom: 20px;
+        }
+
+        #clear-cart-btn:hover {
+            background: #FFEBEE;
+        }
+
+        @media (max-width: 600px) {
+            .co-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <a href="index.html" class="logo">LuxeFashion</a>
+        <div class="bx bx-menu" id="menu-icon"></div>
+        <ul class="navbar">
+            <li><a href="mens.html">Men</a></li>
+            <li><a href="women.html">Women</a></li>
+            <li><a href="kids.html">Kids</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+        <div class="icons">
+            <a href="login.html"><i class='bx bx-user'></i></a>
+            <a href="cart.html"><i class='bx bxs-shopping-bag'></i></a>
+        </div>
+    </header>
+
+    <!-- ── Main content (shown when cart has items, hidden on success) ── -->
+    <div id="cartPage" style="padding-top:90px;">
+        <div class="checkout-wrap">
+
+            <!-- Empty cart state -->
+            <div class="empty-cart" id="emptyState" style="display:none;">
+                <i class='bx bx-cart'></i>
+                <h3>Your cart is empty</h3>
+                <p>Add some items and come back!</p>
+                <a href="index.html">Continue Shopping</a>
+            </div>
+
+            <!-- Cart section (shown when items exist) -->
+            <div id="cartSection">
+                <div class="checkout-card" id="cartCard">
+                    <h2><i class='bx bxs-shopping-bag'></i> Your Cart</h2>
+                    <div id="cartItemsList"></div>
+                    <button id="clear-cart-btn" onclick="clearCart()"><i class='bx bx-trash'></i> Clear Cart</button>
+                </div>
+
+                <!-- Checkout form -->
+                <div class="checkout-card">
+                    <h2><i class='bx bx-user-check'></i> Delivery Details</h2>
+                    <form id="checkoutForm" onsubmit="placeOrder(event)">
+                        <div class="co-grid">
+                            <div class="co-group">
+                                <label>Full Name *</label>
+                                <input type="text" id="co-name" placeholder="e.g. Aarav Sharma" required>
+                            </div>
+                            <div class="co-group">
+                                <label>Phone Number *</label>
+                                <input type="tel" id="co-phone" placeholder="e.g. 9876543210" required>
+                            </div>
+                            <div class="co-group">
+                                <label>Email (optional)</label>
+                                <input type="email" id="co-email" placeholder="you@email.com">
+                            </div>
+                            <div class="co-group">
+                                <label>City *</label>
+                                <input type="text" id="co-city" placeholder="e.g. Chennai" required>
+                            </div>
+                            <div class="co-group full">
+                                <label>Full Address *</label>
+                                <textarea id="co-address" placeholder="Door No., Street, Area…" required></textarea>
+                            </div>
+                            <div class="co-group">
+                                <label>Pin Code *</label>
+                                <input type="text" id="co-pincode" placeholder="e.g. 600001" required maxlength="10">
+                            </div>
+                        </div>
+
+                        <!-- Payment method -->
+                        <div style="margin-top:24px;">
+                            <p
+                                style="font-size:12px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;">
+                                Payment Method</p>
+                            <div class="cod-badge">
+                                <i class='bx bx-money'></i>
+                                <div>
+                                    <strong>Cash on Delivery (COD)</strong>
+                                    <p>Pay when your order arrives at your doorstep.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order summary -->
+                        <div style="margin-top:24px;">
+                            <p
+                                style="font-size:12px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;">
+                                Order Summary</p>
+                            <div id="orderSummaryLines"></div>
+                        </div>
+
+                        <p id="orderError" style="color:#E53935;font-size:13px;margin-top:10px;"></p>
+                        <button class="place-order-btn" type="submit" id="placeOrderBtn">
+                            <i class='bx bx-check-circle'></i> Place Order (COD)
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Success screen ── -->
+    <div id="successScreen" style="display:none; padding-top:100px;">
+        <div class="success-screen">
+            <i class='bx bx-check-circle'></i>
+            <h2>Order Placed Successfully! 🎉</h2>
+            <p>Thank you for shopping with LuxeFashion.<br>Your order will be delivered soon. Pay on delivery.</p>
+            <a href="index.html">Continue Shopping</a>
+        </div>
+    </div>
+
+    <footer>
+        <section class="footer-content" id="footer-content" style="background-color:rgb(0,0,0)">
+            <div class="content1">
+                <img src="img/luxefooter.png">
+                <p>© 2024 LuxeFashions. All rights reserved.</p>
+            </div>
+            <div class="content1">
+                <h5>Contact Us</h5>
+                <li>Vashishta Bhavanam, Amrita Vishwa Vidhyapeetham</li>
+                <li>Email: info@luxefashion.com</li>
+                <li>Phone: +1 (123) 456-7890</li>
+            </div>
+            <div class="content1">
+                <h5>Quick Links</h5>
+                <li><a href="index.html">Shop</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="faq.html">FAQ</a></li>
+                <li><a href="contact.html">Contact Us</a></li>
+            </div>
+            <div class="content1">
+                <h5>Social Media:</h5>
+                <li>Twitter</li>
+                <li>Instagram</li>
+                <li>Facebook</li>
+            </div>
+        </section>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        function renderCart() {
+            const list = document.getElementById('cartItemsList');
+            const summaryLines = document.getElementById('orderSummaryLines');
+
+            if (!cart.length) {
+                document.getElementById('cartSection').style.display = 'none';
+                document.getElementById('emptyState').style.display = 'block';
+                return;
+            }
+
+            let total = 0;
+            list.innerHTML = cart.map((item, i) => {
+                const price = parseFloat(item.price.replace('$', ''));
+                total += price;
+                return `<div class="cart-summary-item">
+                    ${item.img
+                        ? `<img src="${item.img}" alt="${item.title}">`
+                        : `<div class="csi-img-placeholder"><i class='bx bx-image'></i></div>`}
+                    <div class="csi-info">
+                        <p>${item.title}</p>
+                        <small>Qty: 1</small>
+                    </div>
+                    <span class="csi-price">${item.price}</span>
+                    <button onclick="removeItem(${i})" style="background:none;border:none;color:#E53935;cursor:pointer;font-size:18px;padding:4px;"><i class='bx bx-x'></i></button>
+                </div>`;
+            }).join('');
+
+            summaryLines.innerHTML = `
+                <div class="summary-line"><span>${cart.length} item(s)</span><span>$${total.toFixed(2)}</span></div>
+                <div class="summary-line"><span>Delivery</span><span style="color:#2E7D32;font-weight:600;">FREE</span></div>
+                <div class="summary-line total"><span>Total Payable</span><span>$${total.toFixed(2)}</span></div>
+            `;
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            if (!cart.length) {
+                document.getElementById('cartSection').style.display = 'none';
+                document.getElementById('emptyState').style.display = 'block';
+            } else {
+                renderCart();
+            }
+        }
+
+        function clearCart() {
+            localStorage.removeItem('cart');
+            cart = [];
+            document.getElementById('cartSection').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'block';
+        }
+
+        async function placeOrder(e) {
+            e.preventDefault();
+            const btn = document.getElementById('placeOrderBtn');
+            const err = document.getElementById('orderError');
+            err.textContent = '';
+            btn.disabled = true;
+            btn.innerHTML = '<div class="btn-spinner"></div> Placing Order…';
+
+            const total = cart.reduce((s, item) => s + parseFloat(item.price.replace('$', '')), 0);
+
+            const payload = {
+                customerName: document.getElementById('co-name').value.trim(),
+                phone: document.getElementById('co-phone').value.trim(),
+                email: document.getElementById('co-email').value.trim(),
+                address: document.getElementById('co-address').value.trim(),
+                city: document.getElementById('co-city').value.trim(),
+                pincode: document.getElementById('co-pincode').value.trim(),
+                items: cart.map(item => ({
+                    title: item.title,
+                    price: item.price,
+                    img: item.img || '',
+                    quantity: 1
+                })),
+                total: total.toFixed(2),
+                paymentMethod: 'Cash on Delivery'
+            };
+
+            try {
+                const res = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Order failed');
+
+                // Clear cart and show success
+                localStorage.removeItem('cart');
+                cart = [];
+                document.getElementById('cartPage').style.display = 'none';
+                document.getElementById('successScreen').style.display = 'block';
+                window.scrollTo(0, 0);
+            } catch (ex) {
+                err.textContent = '✗ ' + ex.message;
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bx bx-check-circle"></i> Place Order (COD)';
+            }
+        }
+
+        renderCart();
+    </script>
+</body>
+
+</html>
